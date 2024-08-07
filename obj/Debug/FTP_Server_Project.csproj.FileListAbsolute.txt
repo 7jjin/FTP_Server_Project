@@ -1,0 +1,10 @@
+C:\Users\82106\source\repos\FTP_Server_Project\bin\Debug\FTP_Server_Project.exe.config
+C:\Users\82106\source\repos\FTP_Server_Project\bin\Debug\FTP_Server_Project.exe
+C:\Users\82106\source\repos\FTP_Server_Project\bin\Debug\FTP_Server_Project.pdb
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.AssemblyReference.cache
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.Form1.resources
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.Properties.Resources.resources
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.GenerateResource.cache
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.CoreCompileInputs.cache
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.exe
+C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.pdb
