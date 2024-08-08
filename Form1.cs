@@ -1,9 +1,11 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -11,6 +13,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
 
 namespace FTP_Server_Project
 {
@@ -45,6 +50,7 @@ namespace FTP_Server_Project
             richTextBox1.Text = "";
             listBox1.Items.Clear();
         }
+
 
         // 로컬IP 가져오기
         private string GetLocalIP()
@@ -85,17 +91,35 @@ namespace FTP_Server_Project
                 try
                 {
                     clientSocket = server.AcceptTcpClient(); // client 소켓 접속 허용
-
                     NetworkStream stream = clientSocket.GetStream();
+
+                    // 클라이언트로부터 ID, PW 받기
                     byte[] buffer = new byte[1024]; // 버퍼
                     int bytes = stream.Read(buffer, 0, buffer.Length);
-                    string userName = Encoding.Unicode.GetString(buffer, 0, bytes);
-                    userName = userName.Substring(0, userName.IndexOf("$")); // client 사용자 명
-                    DisplayText("System : [" + userName + "] 접속");
+                    string credentials = Encoding.Unicode.GetString(buffer, 0, bytes);
+                    string[] credentialParts = credentials.Split(new char[] { '$' }, 2);
+                    string id = credentialParts[0]; // client 사용자 명
+                    string password = credentialParts[1]; // client 비밀번호
 
-                    clientList.Add(clientSocket, userName); // cleint 리스트에 추가
-                    SendMessageAll(userName + " 님이 입장하셨습니다.", "", false); // 모든 client에게 메세지 전송
-                    SetUserList(userName, "I");
+                    // 인증 확인
+                    if (!AuthenticateUser(id, password))
+                    {
+                        byte[] response = Encoding.Unicode.GetBytes("Invalid credentials");
+                        stream.Write(response, 0, response.Length);
+                        stream.Flush();
+                        clientSocket.Close();
+                        continue; // 다음 클라이언트 접속 대기
+                    }
+                    byte[] successResponse = Encoding.Unicode.GetBytes("Authentication successful");
+                    stream.Write(successResponse, 0, successResponse.Length);
+                    stream.Flush();
+
+                    clientList.Add(clientSocket, id); // cleint 리스트에 추가
+                    SendMessageAll(id + " 님이 입장하셨습니다.", "", false); // 모든 client에게 메세지 전송
+                    SetUserList(id, "I");
+
+                    // 폴더 목록 전송
+                    SendFolderList(stream);
 
                     HandleClient h_client = new HandleClient(); // 클라이언트 추가
                     h_client.OnReceived += new HandleClient.MessageDisplayHandler(OnReceived);
@@ -110,6 +134,74 @@ namespace FTP_Server_Project
             clientSocket.Close(); // client 소켓 닫기
 
             server.Stop(); // 서버 종료
+        }
+
+        // 폴더 및 파일 목록 전송 함수
+        // 폴더 목록 전송 함수
+        private void SendFolderList(NetworkStream stream)
+        {
+            string folderPath = "C:\\Users\\User\\Pictures"; // 서버의 폴더 경로
+            try
+            {
+                List<string> folderAndFileList = new List<string>();
+
+                // 폴더와 파일 목록을 재귀적으로 가져옴
+                GetFoldersAndFiles(folderPath, folderAndFileList);
+
+                // 직렬화하여 클라이언트로 전송
+                string folderListJson = JsonConvert.SerializeObject(folderAndFileList);
+                byte[] buffer = Encoding.Unicode.GetBytes(folderListJson);
+                stream.Write(buffer, 0, buffer.Length);
+                stream.Flush();
+            }
+            catch (Exception ex)
+            {
+                DisplayText("Error: " + ex.Message);
+                byte[] buffer = Encoding.Unicode.GetBytes("Error: An error occurred while accessing the folder.");
+                stream.Write(buffer, 0, buffer.Length);
+                stream.Flush();
+            }
+        }
+
+        private void GetFoldersAndFiles(string path, List<string> list)
+        {
+            try
+            {
+                string[] directories = Directory.GetDirectories(path);
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string directory in directories)
+                {
+                    list.Add(directory);
+                    GetFoldersAndFiles(directory, list); // 재귀적으로 하위 폴더의 내용 추가
+                }
+
+                foreach (string file in files)
+                {
+                    list.Add(file);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                // 접근 권한이 없는 폴더가 있을 경우 무시
+                DisplayText("Access denied: " + path + " - " + ex.Message);
+            }
+        }
+
+
+        // 사용자 인증 함수
+        private bool AuthenticateUser(string userName, string password)
+        {
+            // 레지스트리에서 저장된 ID와 PW를 가져옴
+            RegistryKey ftpKey = Registry.CurrentUser.OpenSubKey(@"SoftWare\FTP");
+            if (ftpKey != null)
+            {
+                string storedUserName = (string)ftpKey.GetValue("FTP_ID");
+                string storedPassword = (string)ftpKey.GetValue("FTP_PW");
+
+                return storedUserName == userName && storedPassword == password;
+            }
+            return false;
         }
 
         // client 접속 해제 
@@ -160,6 +252,7 @@ namespace FTP_Server_Project
                 }
                 else
                 {
+                    DisplayText("[ " + date + " ]" + message);
                     buffer = Encoding.Unicode.GetBytes(message);
                 }
                 stream.Write(buffer, 0, buffer.Length); // 버퍼 쓰기
@@ -180,10 +273,25 @@ namespace FTP_Server_Project
             try
             {
                 if (div.Equals("I"))
-                    listBox1.Items.Add(userName);
+                {
+                    if (listBox1.InvokeRequired)
+                    {
+                        listBox1.Invoke((MethodInvoker)delegate { listBox1.Items.Add(userName); });
+                    }
+                    else
+                    {
+                        listBox1.Items.Add(userName);
+                    }
+                }
                 else if (div.Equals("D"))
-                    listBox1.Items.Remove(userName);
-
+                    if (listBox1.InvokeRequired)
+                    {
+                        listBox1.Invoke((MethodInvoker)delegate { listBox1.Items.Add(userName); });
+                    }
+                    else
+                    {
+                        listBox1.Items.Add(userName);
+                    }
             }
             catch (Exception ex)
             {

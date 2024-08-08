@@ -8,3 +8,16 @@ C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.cspr
 C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.CoreCompileInputs.cache
 C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.exe
 C:\Users\82106\source\repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.pdb
+C:\Users\User\Source\Repos\FTP_Server_Project\bin\Debug\FTP_Server_Project.exe.config
+C:\Users\User\Source\Repos\FTP_Server_Project\bin\Debug\FTP_Server_Project.exe
+C:\Users\User\Source\Repos\FTP_Server_Project\bin\Debug\FTP_Server_Project.pdb
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.AssemblyReference.cache
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.Form1.resources
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.Properties.Resources.resources
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.GenerateResource.cache
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.csproj.CoreCompileInputs.cache
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.exe
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Server_Project.pdb
+C:\Users\User\Source\Repos\FTP_Server_Project\bin\Debug\Newtonsoft.Json.dll
+C:\Users\User\Source\Repos\FTP_Server_Project\bin\Debug\Newtonsoft.Json.xml
+C:\Users\User\Source\Repos\FTP_Server_Project\obj\Debug\FTP_Serv.31F8551C.Up2Date
