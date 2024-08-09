@@ -174,7 +174,7 @@ namespace FTP_Server_Project
             DriveInfo[] drives = DriveInfo.GetDrives();
             return JsonConvert.SerializeObject(drives);
         }
-
+        testtestestes
         private void GetFoldersAndFiles(string path, List<string> list)
         {
             try
