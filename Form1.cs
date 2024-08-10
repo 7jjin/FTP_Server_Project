@@ -140,7 +140,7 @@ namespace FTP_Server_Project
         // 폴더 목록 전송 함수
         private void SendFolderList(NetworkStream stream)
         {
-            string folderPath = "C:\\Users\\User\\Pictures"; // 서버의 폴더 경로
+            string folderPath = "C:\\Users"; // 서버의 폴더 경로
             try
             {
                 List<string> folderAndFileList = new List<string>();
